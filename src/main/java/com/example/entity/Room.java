@@ -1,5 +1,8 @@
 package com.example.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Représente un lieu de l'univers de jeu dans lequel le joueur peut se trouver.
  */
@@ -13,6 +16,10 @@ public class Room
      * La description du lieu
      */
     private String description;
+    /**
+     * La liste de tous les éléments interactifs présents dans ce lieu
+     */
+    private List<Item> items;
 
     /**
      * Crée un nouveau lieu
@@ -23,6 +30,7 @@ public class Room
     {
         this.name = name;
         this.description = description;
+        items = new ArrayList<>();
     }
 
     /**
@@ -39,5 +47,22 @@ public class Room
     public String getDescription()
     {
         return description;
+    }
+
+    /**
+     * @return La liste de tous les éléments interactifs présents dans ce lieu
+     */
+    public List<Item> getItems()
+    {
+        return items;
+    }
+
+    /**
+     * Ajoute un élément interactif à la liste des éléments interactifs présents dans ce lieu
+     * @param item L'élément interactif à ajouter
+     */
+    public void addItem(Item item)
+    {
+        items.add(item);
     }
 }

@@ -28,6 +28,8 @@ public class Item
         this.room = room;
         this.name = name;
         this.visible = true;
+        // Ajoute le nouvel élément interactif à la liste de tous les éléments présents dans le lieu qui lui a été assigné
+        room.addItem(this);
     }
 
     /**
@@ -41,6 +43,8 @@ public class Item
         this.room = room;
         this.name = name;
         this.visible = visible;
+        // Ajoute le nouvel élément interactif à la liste de tous les éléments présents dans le lieu qui lui a été assigné
+        room.addItem(this);
     }
 
     /**
