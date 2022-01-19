@@ -3,7 +3,10 @@ package com.example.game;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.example.entity.Command;
 import com.example.entity.Direction;
 import com.example.entity.Item;
 import com.example.entity.Room;
@@ -19,9 +22,9 @@ public class Game
      */
     private Scanner scanner;
     /**
-     * La liste de tous les lieux existant dans l'univers du jeu
+     * La liste de toutes les commandes existantes
      */
-    private Room[] rooms;
+    private Command[] commands;
     /**
      * La liste de toutes les directions existant dans l'univers du jeu
      */
@@ -51,6 +54,10 @@ public class Game
         // Définit que la partie est en cours d'exécution
         isRunning = true;
 
+        // Crée les commandes
+        Command use = new Command("use", "You have no idea how to use that.");
+        Command open = new Command("open", "This doesn't seen to open.");
+        commands = new Command[] { use, open };
         // Crée les directions
         Direction east = new Direction("east");
         Direction south = new Direction("south");
@@ -65,15 +72,15 @@ public class Game
         new RoomConnection(bedroom, bathroom, east);
         new RoomConnection(bathroom, bedroom, west);
         // Crée les éléments interactifs
-        new Item(bedroom, "bed");
-        new Item(bedroom, "curtains");
+        Item bed = new Item(bedroom, "bed");
+        Item curtains = new Item(bedroom, "curtains");
         new Item(bathroom, "shower");
         new Item(bathroom, "toothbrush");
         new Item(kitchen, "cookie");
         new Item(kitchen, "faucet");
-
-        // Crée une liste contenant tous les lieux
-        this.rooms = new Room[] { bedroom, bathroom, kitchen };
+        // Crée les interactions
+        bed.addEffect(use, "You take a quick nap. You feel refreshed!");
+        curtains.addEffect(open, "You open the curtains and take a look outside.");
 
         // Définit le lieu de départ du joueur
         currentRoom = bedroom;
@@ -128,8 +135,41 @@ public class Game
             }
         }
 
-        // Si aucune direction ne correspond à la saisie utilisateur
-        System.out.println("This direction doesn't exist!");
+        // Si la saisie utilisateur ne correspond à aucune direction,
+        // cherche si elle correspond à une commande
+        for (Command command : commands) {
+            // Vérifie si la saisie utilisateur contient le nom de la commande suivi d'un nom d'objet
+            Pattern pattern = Pattern.compile("^" + command.getName() + "\\s+(.+)$");
+            Matcher matcher = pattern.matcher(userInput);
+            // Si la saisie utilisateur correspond à cette commande
+            if (matcher.matches()) {
+                // Récupère le nom de l'élément interactif qui suit la commande
+                String itemName = matcher.group(1);
+                // Cherche si le nom fourni correspond à un objet présent dans le lieu actuel
+                for (Item item : currentRoom.getItems()) {
+                    // Si le nom fourni correspond à cet élément interactif
+                    if (itemName.equals(item.getName())) {
+                        // Récupère le message prévu lorsque l'on utilise cette commande sur cet élément
+                        String message = item.getEffect(command);
+                        // S'il n'est pas possible d'utiliser cette commande sur cet élément interactif
+                        if (message == null) {
+                            // Affiche le message par défaut de la commande
+                            System.out.println(command.getDefaultMessage());
+                            return;
+                        }
+                        // Sinon, affiche le message prévu pour cette interaction
+                        System.out.println(message);
+                        return;
+                    }
+                }
+                // Si le nom fourni ne correspond à aucun élémént interactif présent dans le lieu actuel
+                System.out.println("There is no such item here!");
+                return;
+            }
+        }
+
+        // Si aucune commande ne correspond à la saisie utilisateur
+        System.out.println("This command doesn't exist!");
     }
 
     /**
