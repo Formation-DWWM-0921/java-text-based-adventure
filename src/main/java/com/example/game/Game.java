@@ -87,6 +87,7 @@ public class Game
         System.out.println("");
 
         // Affiche la description du lieu
+        System.out.println(String.format("You are in the %s.", currentRoom.getName()));
         System.out.println(currentRoom.getDescription());
         // Affiche la liste des éléments interactifs présents dans le lieu
         if (currentRoom.getItems().isEmpty()) {
@@ -99,6 +100,13 @@ public class Game
             }
             System.out.println(String.join(", ", itemNames) + ".");
         }
+        // Affiche la liste des directions disponibles à partir du lieu
+        System.out.print("Available directions: ");
+        List<String> directionsNames = new ArrayList<>();
+        for (RoomConnection connection : currentRoom.getConnectionsFrom()) {
+            directionsNames.add(connection.getDirection().getName());
+        }
+        System.out.println(String.join(", ", directionsNames) + ".");
 
         // Attend une saisie utilisateur
         String userInput = scanner.nextLine();

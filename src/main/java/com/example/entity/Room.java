@@ -90,6 +90,14 @@ public class Room
     }
 
     /**
+     * @return La liste de tous les passages qui partent de ce lieu
+     */
+    public List<RoomConnection> getConnectionsFrom()
+    {
+        return connectionsFrom;
+    }
+
+    /**
      * Ajoute un passage partant de ce lieu à a liste de tous les passages existants
      * @param connection Le passage à rajouter
      */
