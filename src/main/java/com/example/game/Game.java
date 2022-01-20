@@ -11,6 +11,9 @@ import com.example.entity.Direction;
 import com.example.entity.Item;
 import com.example.entity.Room;
 import com.example.entity.RoomConnection;
+import com.example.entity.effect.ChangeCurrentRoomEffect;
+import com.example.entity.effect.Effect;
+import com.example.entity.effect.EndGameEffect;
 import com.example.entity.effect.MessageEffect;
 
 /**
@@ -58,7 +61,8 @@ public class Game
         // Crée les commandes
         Command use = new Command("use", "You have no idea how to use that.");
         Command open = new Command("open", "This doesn't seem to open.");
-        commands = new Command[] { use, open };
+        Command eat = new Command("eat", "This doesn't seem edible.");
+        commands = new Command[] { use, open, eat };
         // Crée les directions
         Direction east = new Direction("east");
         Direction south = new Direction("south");
@@ -69,19 +73,27 @@ public class Game
         Room bedroom = new Room("bedroom", "This is where you usually sleep. It's quite small, but at least the bed is comfy.");
         Room bathroom = new Room("bathroom", "This is the bathroom. There's no windows in there, so it tends to get easily dank.");
         Room kitchen = new Room("kitchen", "This is the kitchen. It still smells of yesterday's dinner.");
+        Room attic = new Room("attic", "Dusty.");
         // Crée les passages entre les lieux
         new RoomConnection(bedroom, bathroom, east);
         new RoomConnection(bathroom, bedroom, west);
+        new RoomConnection(bedroom, kitchen, north);
+        new RoomConnection(kitchen, bedroom, south);
         // Crée les éléments interactifs
         Item bed = new Item(bedroom, "bed");
         Item curtains = new Item(bedroom, "curtains");
         new Item(bathroom, "shower");
         new Item(bathroom, "toothbrush");
-        new Item(kitchen, "cookie");
+        Item cookie = new Item(kitchen, "cookie");
         new Item(kitchen, "faucet");
+        Item liftInBedroom = new Item(bedroom, "lift");
+        Item liftInAttic = new Item(attic, "lift");
         // Crée les effets des commandes sur les éléments interactifs
         new MessageEffect(use, bed, "You take a quick nap. You feel refreshed!");
         new MessageEffect(open, curtains, "You open the curtains and take a look outside.");
+        new EndGameEffect(eat, cookie, this);
+        new ChangeCurrentRoomEffect(use, liftInBedroom, attic, this);
+        new ChangeCurrentRoomEffect(use, liftInAttic, bedroom, this);
 
         // Définit le lieu de départ du joueur
         currentRoom = bedroom;
@@ -151,7 +163,7 @@ public class Game
                     // Si le nom fourni correspond à cet élément interactif
                     if (itemName.equals(item.getName())) {
                         // Récupère le message prévu lorsque l'on utilise cette commande sur cet élément
-                        MessageEffect effect = item.getEffect(command);
+                        Effect effect = item.getEffect(command);
                         // S'il n'est pas possible d'utiliser cette commande sur cet élément interactif
                         if (effect == null) {
                             // Affiche le message par défaut de la commande
@@ -159,7 +171,7 @@ public class Game
                             return;
                         }
                         // Sinon, affiche le message prévu pour cette interaction
-                        System.out.println(effect.getMessage());
+                        effect.trigger();
                         return;
                     }
                 }
@@ -183,10 +195,27 @@ public class Game
     }
 
     /**
+     * Arrête la partie
+     */
+    public void terminate()
+    {
+        isRunning = false;
+    }
+
+    /**
      * @return Le lieu dans lequel le joueur se trouve actuellement
      */
     public Room getCurrentRoom()
     {
         return currentRoom;
+    }
+
+    /**
+     * Modifie le lieu dans lequel le joueur se trouve actuellement
+     * @param room Le nouveau lieu
+     */
+    public void setCurrentRoon(Room room)
+    {
+        this.currentRoom = room;
     }
 }

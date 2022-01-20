@@ -3,7 +3,7 @@ package com.example.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.entity.effect.MessageEffect;
+import com.example.entity.effect.Effect;
 
 /**
  * Une action que le joueur peut utiliser sur un élément interactif
@@ -21,7 +21,7 @@ public class Command
     /**
      * La liste de tous les effets que cette commande peut produire
      */
-    private List<MessageEffect> effects;
+    private List<Effect> effects;
 
     /**
      * Crée une nouvelle commande
@@ -54,7 +54,7 @@ public class Command
     /**
      * @return La liste de tous les effets que cette commande peut produire
      */
-    public List<MessageEffect> getEffects()
+    public List<Effect> getEffects()
     {
         return effects;
     }
@@ -63,7 +63,7 @@ public class Command
      * Ajoute un effet à la liste de tous les effets que peut produire cette commande
      * @param effect L'effet à ajouter
      */
-    public void addEffect(MessageEffect effect)
+    public void addEffect(Effect effect)
     {
         effects.add(effect);
     }

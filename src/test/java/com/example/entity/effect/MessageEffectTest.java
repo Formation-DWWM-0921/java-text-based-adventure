@@ -24,7 +24,7 @@ public class MessageEffectTest
         assertEquals(item, effect.getItem());
         assertEquals("Pouet!", effect.getMessage());
 
-        List<MessageEffect> effects;
+        List<Effect> effects;
         effects = command.getEffects();
         assertEquals(1, effects.size());
         assertEquals(effect, effects.get(0));
