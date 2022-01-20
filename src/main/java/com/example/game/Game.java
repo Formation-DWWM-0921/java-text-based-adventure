@@ -11,6 +11,7 @@ import com.example.entity.Direction;
 import com.example.entity.Item;
 import com.example.entity.Room;
 import com.example.entity.RoomConnection;
+import com.example.entity.effect.MessageEffect;
 
 /**
  * Représente une partie jouée par le joueur.
@@ -56,7 +57,7 @@ public class Game
 
         // Crée les commandes
         Command use = new Command("use", "You have no idea how to use that.");
-        Command open = new Command("open", "This doesn't seen to open.");
+        Command open = new Command("open", "This doesn't seem to open.");
         commands = new Command[] { use, open };
         // Crée les directions
         Direction east = new Direction("east");
@@ -78,9 +79,9 @@ public class Game
         new Item(bathroom, "toothbrush");
         new Item(kitchen, "cookie");
         new Item(kitchen, "faucet");
-        // Crée les interactions
-        bed.addEffect(use, "You take a quick nap. You feel refreshed!");
-        curtains.addEffect(open, "You open the curtains and take a look outside.");
+        // Crée les effets des commandes sur les éléments interactifs
+        new MessageEffect(use, bed, "You take a quick nap. You feel refreshed!");
+        new MessageEffect(open, curtains, "You open the curtains and take a look outside.");
 
         // Définit le lieu de départ du joueur
         currentRoom = bedroom;
@@ -150,15 +151,15 @@ public class Game
                     // Si le nom fourni correspond à cet élément interactif
                     if (itemName.equals(item.getName())) {
                         // Récupère le message prévu lorsque l'on utilise cette commande sur cet élément
-                        String message = item.getEffect(command);
+                        MessageEffect effect = item.getEffect(command);
                         // S'il n'est pas possible d'utiliser cette commande sur cet élément interactif
-                        if (message == null) {
+                        if (effect == null) {
                             // Affiche le message par défaut de la commande
                             System.out.println(command.getDefaultMessage());
                             return;
                         }
                         // Sinon, affiche le message prévu pour cette interaction
-                        System.out.println(message);
+                        System.out.println(effect.getMessage());
                         return;
                     }
                 }

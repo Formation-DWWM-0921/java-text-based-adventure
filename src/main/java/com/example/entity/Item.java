@@ -1,7 +1,9 @@
 package com.example.entity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.entity.effect.MessageEffect;
 
 /**
  * Représente un élément de l'univers de jeu, avec lequel le joueur pourra interagir.
@@ -21,9 +23,9 @@ public class Item
      */
     private boolean visible;
     /**
-     * La liste qui associe à chaque commande possible l'effet à réaliser lorsqu'elle est utilisée sur cet élément
+     * La liste de tous les effets que cet élément interactif peut produire
      */
-    private Map<Command, String> effects;
+    private List<MessageEffect> effects;
 
     /**
      * Crée un nouvel élément interactif visible
@@ -37,7 +39,7 @@ public class Item
         this.visible = true;
         // Ajoute le nouvel élément interactif à la liste de tous les éléments présents dans le lieu qui lui a été assigné
         room.addItem(this);
-        effects = new HashMap<>();
+        effects = new ArrayList<>();
     }
 
     /**
@@ -53,7 +55,7 @@ public class Item
         this.visible = visible;
         // Ajoute le nouvel élément interactif à la liste de tous les éléments présents dans le lieu qui lui a été assigné
         room.addItem(this);
-        effects = new HashMap<>();
+        effects = new ArrayList<>();
     }
 
     /**
@@ -78,21 +80,35 @@ public class Item
     }
 
     /**
-     * @param command La commande à réaliser
-     * @return L'effet à réaliser lorsque l'on utilise une commande sur cet élément
+     * @return La liste de tous les effets que cet élément interactif peut produire
      */
-    public String getEffect(Command command)
+    public List<MessageEffect> getEffects()
     {
-        return effects.get(command);
+        return effects;
     }
 
     /**
-     * Associe un effet à une commande lorsqu'elle est utilisée sut cet élément
-     * @param command La commande à utiliser
-     * @param message Le message à afficher
+     * @param command La commande désirée
+     * @return L'effet à déclencher lorsque la commande désirée est utilisée sur cet élément interactif
      */
-    public void addEffect(Command command, String message)
+    public MessageEffect getEffect(Command command)
     {
-        effects.put(command, message);
+        // Cherche parmi tous les effets associés à cet élément interactif
+        for (MessageEffect effect : effects) {
+            if (effect.getCommand() == command) {
+                return effect;
+            }
+        }
+        // Si aucun effet associé à cet élément interactif ne correspond à la commande désirée
+        return null;
+    }
+        
+    /**
+     * Ajoute un effet à la liste de tous les effets que peut produire cet élément interactif
+     * @param effect L'effet à ajouter
+     */
+    public void addEffect(MessageEffect effect)
+    {
+        effects.add(effect);
     }
 }
