@@ -1,18 +1,17 @@
 package com.example.game;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.example.entity.Command;
-import com.example.entity.Direction;
 import com.example.entity.Item;
 import com.example.entity.Room;
 import com.example.entity.RoomConnection;
+import com.example.entity.command.Command;
+import com.example.entity.command.DirectionCommand;
+import com.example.entity.command.ExitCommand;
+import com.example.entity.command.ItemCommand;
+import com.example.entity.command.LookCommand;
+import com.example.entity.command.ResetCommand;
 import com.example.entity.effect.ChangeCurrentRoomEffect;
-import com.example.entity.effect.Effect;
 import com.example.entity.effect.EndGameEffect;
 import com.example.entity.effect.MessageEffect;
 
@@ -30,10 +29,6 @@ public class Game
      */
     private Command[] commands;
     /**
-     * La liste de toutes les directions existant dans l'univers du jeu
-     */
-    private Direction[] directions;
-    /**
      * Le jeu est-il en cours d'exécution?
      */
     private boolean isRunning;
@@ -41,6 +36,10 @@ public class Game
      * Le lieu dans lequel le joueur se trouve actuellement
      */
     private Room currentRoom;
+    /**
+     * La commande permettant d'afficher la description du lieu actuel
+     */
+    private LookCommand lookCommand;
 
     /**
      * Crée une nouvelle partie
@@ -58,17 +57,20 @@ public class Game
         // Définit que la partie est en cours d'exécution
         isRunning = true;
 
-        // Crée les commandes
-        Command use = new Command("use", "You have no idea how to use that.");
-        Command open = new Command("open", "This doesn't seem to open.");
-        Command eat = new Command("eat", "This doesn't seem edible.");
-        commands = new Command[] { use, open, eat };
-        // Crée les directions
-        Direction east = new Direction("east");
-        Direction south = new Direction("south");
-        Direction west = new Direction("west");
-        Direction north = new Direction("north");
-        directions = new Direction[] { east, south, west, north };
+        // Crée les commandes globales
+        lookCommand = new LookCommand(this);
+        ExitCommand exitCommand = new ExitCommand(this);
+        ResetCommand resetCommand = new ResetCommand(this);
+        // Crée les commandes interactives
+        ItemCommand use = new ItemCommand(this, "use", "You have no idea how to use that.");
+        ItemCommand open = new ItemCommand(this, "open", "This doesn't seem to open.");
+        ItemCommand eat = new ItemCommand(this, "eat", "This doesn't seem edible.");
+        // Crée les commandes de direction
+        DirectionCommand east = new DirectionCommand(this, "east");
+        DirectionCommand south = new DirectionCommand(this, "south");
+        DirectionCommand west = new DirectionCommand(this, "west");
+        DirectionCommand north = new DirectionCommand(this, "north");
+        commands = new Command[] { lookCommand, exitCommand, resetCommand, east, south, west, north, use, open, eat };
         // Crée les lieux
         Room bedroom = new Room("bedroom", "This is where you usually sleep. It's quite small, but at least the bed is comfy.");
         Room bathroom = new Room("bathroom", "This is the bathroom. There's no windows in there, so it tends to get easily dank.");
@@ -96,7 +98,7 @@ public class Game
         new ChangeCurrentRoomEffect(use, liftInAttic, bedroom, this);
 
         // Définit le lieu de départ du joueur
-        currentRoom = bedroom;
+        setCurrentRoom(bedroom);
     }
 
     /**
@@ -106,77 +108,13 @@ public class Game
     {
         System.out.println("");
 
-        // Affiche la description du lieu
-        System.out.println(String.format("You are in the %s.", currentRoom.getName()));
-        System.out.println(currentRoom.getDescription());
-        // Affiche la liste des éléments interactifs présents dans le lieu
-        if (currentRoom.getItems().isEmpty()) {
-            System.out.println("No available items.");
-        } else {
-            System.out.print("Available items: ");
-            List<String> itemNames = new ArrayList<>();
-            for (Item item : currentRoom.getItems()) {
-                itemNames.add(item.getName());
-            }
-            System.out.println(String.join(", ", itemNames) + ".");
-        }
-        // Affiche la liste des directions disponibles à partir du lieu
-        System.out.print("Available directions: ");
-        List<String> directionsNames = new ArrayList<>();
-        for (RoomConnection connection : currentRoom.getConnectionsFrom()) {
-            directionsNames.add(connection.getDirection().getName());
-        }
-        System.out.println(String.join(", ", directionsNames) + ".");
-
         // Attend une saisie utilisateur
         String userInput = scanner.nextLine();
-
-        // Cherche une direction correspondant à la saisie de l'utilisateur
-        for (Direction direction : directions) {
-            // Si la saisie utilisateur correspond au nom de la direction
-            if (userInput.equals(direction.getName())) {
-                // Demande au lieu actuel de trouver le lieu d'arrivée lorsqu'on emprunte cette direction
-                Room room = currentRoom.getRoomInDirection(direction);
-                // Si ce lieu n'existe pas
-                if (room == null) {
-                    System.out.println("You cannot go in that direction!");
-                    return;
-                }
-                // Si ce lieu existe, change le lieu actuel pour le nouveau lieu
-                currentRoom = room;
-                return;
-            }
-        }
-
-        // Si la saisie utilisateur ne correspond à aucune direction,
-        // cherche si elle correspond à une commande
+        
+        // Pour chaque commande possible, peu importe son type réel (commande globale, direction, interaction…)
         for (Command command : commands) {
-            // Vérifie si la saisie utilisateur contient le nom de la commande suivi d'un nom d'objet
-            Pattern pattern = Pattern.compile("^" + command.getName() + "\\s+(.+)$");
-            Matcher matcher = pattern.matcher(userInput);
-            // Si la saisie utilisateur correspond à cette commande
-            if (matcher.matches()) {
-                // Récupère le nom de l'élément interactif qui suit la commande
-                String itemName = matcher.group(1);
-                // Cherche si le nom fourni correspond à un objet présent dans le lieu actuel
-                for (Item item : currentRoom.getItems()) {
-                    // Si le nom fourni correspond à cet élément interactif
-                    if (itemName.equals(item.getName())) {
-                        // Récupère le message prévu lorsque l'on utilise cette commande sur cet élément
-                        Effect effect = item.getEffect(command);
-                        // S'il n'est pas possible d'utiliser cette commande sur cet élément interactif
-                        if (effect == null) {
-                            // Affiche le message par défaut de la commande
-                            System.out.println(command.getDefaultMessage());
-                            return;
-                        }
-                        // Sinon, affiche le message prévu pour cette interaction
-                        effect.trigger();
-                        return;
-                    }
-                }
-                // Si le nom fourni ne correspond à aucun élémént interactif présent dans le lieu actuel
-                System.out.println("There is no such item here!");
+            // Demande à la commande de traiter la saisie utilisateur. Si la commande correspond à la saisie utilisateur, elle réalise l'effet de la commande par elle-même, et la boucle est interrompue. Sinon, rien ne se passe.
+            if (command.process(userInput)) {
                 return;
             }
         }
@@ -214,8 +152,9 @@ public class Game
      * Modifie le lieu dans lequel le joueur se trouve actuellement
      * @param room Le nouveau lieu
      */
-    public void setCurrentRoon(Room room)
+    public void setCurrentRoom(Room room)
     {
         this.currentRoom = room;
+        lookCommand.execute();
     }
 }

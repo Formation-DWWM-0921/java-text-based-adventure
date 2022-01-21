@@ -3,6 +3,7 @@ package com.example.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.entity.command.ItemCommand;
 import com.example.entity.effect.Effect;
 
 /**
@@ -91,7 +92,7 @@ public class Item
      * @param command La commande désirée
      * @return L'effet à déclencher lorsque la commande désirée est utilisée sur cet élément interactif
      */
-    public Effect getEffect(Command command)
+    public Effect getEffect(ItemCommand command)
     {
         // Cherche parmi tous les effets associés à cet élément interactif
         for (Effect effect : effects) {

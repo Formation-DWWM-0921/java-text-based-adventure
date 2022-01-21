@@ -4,9 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import com.example.entity.Command;
 import com.example.entity.Item;
 import com.example.entity.Room;
+import com.example.entity.command.ItemCommand;
+import com.example.game.Game;
 
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ public class MessageEffectTest
     @Test
     public void testConstructors()
     {
-        Command command = new Command("use", "Default message");
+        ItemCommand command = new ItemCommand(new Game(), "use", "Default message");
         Room room = new Room("bedroom", "Bedroom description");
         Item item = new Item(room, "pouet");
         MessageEffect effect = new MessageEffect(command, item, "Pouet!");

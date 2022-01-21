@@ -1,8 +1,8 @@
 package com.example.entity.effect;
 
-import com.example.entity.Command;
 import com.example.entity.Item;
 import com.example.entity.Room;
+import com.example.entity.command.ItemCommand;
 import com.example.game.Game;
 
 /**
@@ -26,7 +26,7 @@ public class ChangeCurrentRoomEffect extends Effect
      * @param targetRoom Le lieu dans lequel l'effet doit déplacer le joueur
      * @param game La partie en cours
      */
-    public ChangeCurrentRoomEffect(Command command, Item item, Room targetRoom, Game game)
+    public ChangeCurrentRoomEffect(ItemCommand command, Item item, Room targetRoom, Game game)
     {
         super(command, item);
         this.targetRoom = targetRoom;
@@ -38,6 +38,6 @@ public class ChangeCurrentRoomEffect extends Effect
      */
     public void trigger()
     {
-        game.setCurrentRoon(targetRoom);
+        game.setCurrentRoom(targetRoom);
     }
 }

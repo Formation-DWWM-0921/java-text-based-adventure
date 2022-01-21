@@ -1,7 +1,7 @@
 package com.example.entity.effect;
 
-import com.example.entity.Command;
 import com.example.entity.Item;
+import com.example.entity.command.ItemCommand;
 
 /**
  * Représente un effet permettant d'afficher un message
@@ -19,7 +19,7 @@ public class MessageEffect extends Effect
      * @param item L'élément interactif qui déclenche l'effet lorsque la commande est utilisée avec
      * @param message Le message à afficher
      */
-    public MessageEffect(Command command, Item item, String message)
+    public MessageEffect(ItemCommand command, Item item, String message)
     {
         // Appelle le constructeur de Effect en lui passant les données dont il a besoin
         super(command, item);

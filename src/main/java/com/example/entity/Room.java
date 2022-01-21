@@ -3,6 +3,8 @@ package com.example.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.entity.command.DirectionCommand;
+
 /**
  * Représente un lieu de l'univers de jeu dans lequel le joueur peut se trouver.
  */
@@ -42,7 +44,7 @@ public class Room
      * @param direction La direction à emprunter
      * @return Le lieu où l'on arrive lorsque l'on part de ce lieu
      */
-    public Room getRoomInDirection(Direction direction)
+    public Room getRoomInDirection(DirectionCommand direction)
     {
         // Cherche parmi tous les passages partant de ce lieu
         for (RoomConnection connection : connectionsFrom) {

@@ -1,7 +1,7 @@
 package com.example.entity.effect;
 
-import com.example.entity.Command;
 import com.example.entity.Item;
+import com.example.entity.command.ItemCommand;
 import com.example.game.Game;
 
 /**
@@ -19,7 +19,7 @@ public class EndGameEffect extends Effect
      * @param command La commande qui déclenche l'effet
      * @param item L'élément interactif qui déclenche l'effet lorsque la commande est utilisée avec
      */
-    public EndGameEffect(Command command, Item item, Game game)
+    public EndGameEffect(ItemCommand command, Item item, Game game)
     {
         super(command, item);
         this.game = game;

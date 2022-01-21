@@ -1,7 +1,7 @@
 package com.example.entity.effect;
 
-import com.example.entity.Command;
 import com.example.entity.Item;
+import com.example.entity.command.ItemCommand;
 
 /**
  * Représente un effet qui se déclenche lorsque le joueur utilise une commande sur un élément interactif
@@ -11,7 +11,7 @@ abstract public class Effect
     /**
      * La commande qui déclenche l'effet
      */
-    private Command command;
+    private ItemCommand command;
     /**
      * L'élément interactif qui déclenche l'effet lorsque la commande est utilisée avec
      */
@@ -22,7 +22,7 @@ abstract public class Effect
      * @param command La commande qui déclenche l'effet
      * @param item L'élément interactif qui déclenche l'effet lorsque la commande est utilisée avec
      */
-    public Effect(Command command, Item item)
+    public Effect(ItemCommand command, Item item)
     {
         this.command = command;
         this.item = item;
@@ -48,7 +48,7 @@ abstract public class Effect
     /**
      * @return La commande qui déclenche l'effet
      */
-    public Command getCommand()
+    public ItemCommand getCommand()
     {
         return command;
     }
